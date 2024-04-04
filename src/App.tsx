@@ -1,5 +1,10 @@
-import { ExpenseTrackerApp } from "./components";
+import { ExpenseTrackerApp } from './components';
+import { BudgetProvider } from './context/BudgetContext';
 
 export const App = () => {
-  return <ExpenseTrackerApp />;
+    return (
+        <BudgetProvider>
+            <ExpenseTrackerApp />
+        </BudgetProvider>
+    );
 };
