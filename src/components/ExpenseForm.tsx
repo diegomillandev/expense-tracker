@@ -6,6 +6,7 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { DraftExpense, Value } from '../types';
 import { useBudget } from '../hooks/useBudget';
 import { MessageAlert } from '.';
+import { calculateAmount } from '../helpers';
 
 const initialExpense: DraftExpense = {
     amount: 0,
@@ -15,7 +16,8 @@ const initialExpense: DraftExpense = {
 };
 
 export const ExpenseForm = () => {
-    const [alert, setAlert] = useState(false);
+    const [messageAlert, setMessageAlert] = useState('');
+    const [amountExpend, setAmountExpend] = useState(0);
     const { state, dispatch } = useBudget();
     const [expense, setExpense] = useState<DraftExpense>(initialExpense);
 
@@ -30,6 +32,7 @@ export const ExpenseForm = () => {
                 category,
                 date,
             });
+            setAmountExpend(amount);
         }
     }, [state.editingID]);
 
@@ -52,14 +55,25 @@ export const ExpenseForm = () => {
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        const spent = calculateAmount(state.expenses);
+        const available = state.budget - spent;
         if (
             Object.values(expense).includes('') ||
             Object.values(expense).includes(0)
         ) {
-            setAlert(true);
+            setMessageAlert('All fields are required');
             setTimeout(() => {
-                setAlert(false);
+                setMessageAlert('');
             }, 1500);
+            return;
+        }
+        if (expense.amount > available + amountExpend) {
+            setMessageAlert(
+                `Exceeds the available quantity of ${available + amountExpend}`
+            );
+            setTimeout(() => {
+                setMessageAlert('');
+            }, 2000);
             return;
         }
         if (state.editingID) {
@@ -146,7 +160,7 @@ export const ExpenseForm = () => {
                 className="bg-blue-500 hover:bg-blue-600 w-full py-2 font-bold uppercase text-white rounded-sm hover:cursor-pointer block"
                 value={handleBtn()}
             />
-            {alert && <MessageAlert>{'All fields are required'}</MessageAlert>}
+            {messageAlert && <MessageAlert>{messageAlert}</MessageAlert>}
         </form>
     );
 };

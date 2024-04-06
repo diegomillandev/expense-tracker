@@ -1,3 +1,5 @@
+import { Expense } from '../types';
+
 export const formatCurrency = (_amount: number) => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -14,4 +16,12 @@ export const formatDate = (_date: string): string => {
         day: 'numeric',
     };
     return new Intl.DateTimeFormat('en-US', options).format(date);
+};
+
+export const calculateAmount = (_arrayObj: Expense[]): number => {
+    const estimatedAmount = _arrayObj.reduce(
+        (total, Obj) => total + Obj.amount,
+        0
+    );
+    return estimatedAmount;
 };
