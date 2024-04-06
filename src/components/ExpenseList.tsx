@@ -10,13 +10,12 @@ export const ExpenseList = () => {
         [state.expenses]
     );
 
-    const filterExpenses = useMemo(() => {
-        if (!state.filterExpensesID) return state.expenses;
-        const filter = state.expenses.filter(
-            (expense) => expense.category === state.filterExpensesID
-        );
-        return filter;
-    }, [state.filterExpensesID]);
+    const expenses =
+        state.filter !== 0
+            ? state.expenses.filter(
+                  (expense) => expense.category === state.filter
+              )
+            : state.expenses;
 
     const handleChangeFilter = (
         event: React.ChangeEvent<HTMLSelectElement>
@@ -54,8 +53,8 @@ export const ExpenseList = () => {
                             </select>
                         </div>
                     </div>
-                    {filterExpenses.length !== 0 ? (
-                        filterExpenses.map((expense) => (
+                    {expenses.length !== 0 ? (
+                        expenses.map((expense) => (
                             <ExpenseDetail key={expense.id} expense={expense} />
                         ))
                     ) : (
