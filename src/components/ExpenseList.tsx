@@ -1,28 +1,15 @@
 import { useMemo } from 'react';
 import { useBudget } from '../hooks/useBudget';
 import { ExpenseDetail } from '.';
-import { categories } from '../constants';
 
 export const ExpenseList = () => {
-    const { state, dispatch } = useBudget();
+    const { state } = useBudget();
     const isEmpty = useMemo(
         () => state.expenses.length === 0,
         [state.expenses]
     );
 
-    const expenses =
-        state.filter !== 0
-            ? state.expenses.filter(
-                  (expense) => expense.category === state.filter
-              )
-            : state.expenses;
-
-    const handleChangeFilter = (
-        event: React.ChangeEvent<HTMLSelectElement>
-    ) => {
-        const idCategory = +event.target.value;
-        dispatch({ type: 'filter-expenses', payload: { id: idCategory } });
-    };
+    const expenses = state.expenses;
 
     return (
         <div className="mt-0">
@@ -36,11 +23,8 @@ export const ExpenseList = () => {
                         <p className="text-gray-600 text-2xl text-center font-bold my-5">
                             List of expenses
                         </p>
-                        <div className="self-end bg-white p-2 rounded-md mb-5">
-                            <select
-                                defaultValue={''}
-                                onChange={handleChangeFilter}
-                            >
+                        {/* <div className="self-end bg-white p-2 rounded-md mb-5">
+                            <select onChange={handleChangeFilter}>
                                 <option value="">All Categories</option>
                                 {categories.map((category) => (
                                     <option
@@ -51,7 +35,7 @@ export const ExpenseList = () => {
                                     </option>
                                 ))}
                             </select>
-                        </div>
+                        </div> */}
                     </div>
                     {expenses.length !== 0 ? (
                         expenses.map((expense) => (

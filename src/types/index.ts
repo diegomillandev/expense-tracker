@@ -5,14 +5,14 @@ export type Expense = {
     id: string;
     amount: number;
     name: string;
-    category: number;
+    category: string;
     date: Value;
 };
 
 export type DraftExpense = Omit<Expense, 'id'>;
 
 export type Category = {
-    id: number;
+    id: string;
     name: string;
     icon: string;
 };

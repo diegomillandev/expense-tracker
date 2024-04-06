@@ -11,7 +11,7 @@ import { calculateAmount } from '../helpers';
 const initialExpense: DraftExpense = {
     amount: 0,
     name: '',
-    category: 0,
+    category: '',
     date: new Date(),
 };
 
@@ -42,7 +42,7 @@ export const ExpenseForm = () => {
         const { id, value } = event.target;
         setExpense({
             ...expense,
-            [id]: id === 'name' ? value : +value,
+            [id]: id === 'amount' ? +value : value,
         });
     };
 
