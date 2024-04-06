@@ -2,7 +2,7 @@ import DatePicker from 'react-date-picker';
 import { categories } from '../constants';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { DraftExpense, Value } from '../types';
 import { useBudget } from '../hooks/useBudget';
 import { MessageAlert } from '.';
@@ -16,8 +16,22 @@ const initialExpense: DraftExpense = {
 
 export const ExpenseForm = () => {
     const [alert, setAlert] = useState(false);
+    const { state, dispatch } = useBudget();
     const [expense, setExpense] = useState<DraftExpense>(initialExpense);
-    const { dispatch } = useBudget();
+
+    useEffect(() => {
+        if (state.editingID) {
+            const { name, amount, category, date } = state.expenses.filter(
+                (expense) => expense.id === state.editingID
+            )[0];
+            setExpense({
+                name,
+                amount,
+                category,
+                date,
+            });
+        }
+    }, [state.editingID]);
 
     const handleChangeInput = (
         event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
@@ -48,12 +62,21 @@ export const ExpenseForm = () => {
             }, 1500);
             return;
         }
-
-        dispatch({ type: 'add-expense', payload: { expense } });
+        if (state.editingID) {
+            dispatch({
+                type: 'edit-expense',
+                payload: { expense: { ...expense, id: state.editingID } },
+            });
+        } else {
+            dispatch({ type: 'add-expense', payload: { expense } });
+        }
         setExpense(initialExpense);
         dispatch({ type: 'hidden-modal' });
     };
 
+    const handleBtn = () => {
+        return state.editingID ? 'Update Expense' : 'Add Expense';
+    };
     return (
         <form className="space-y-5" onSubmit={handleSubmit}>
             <legend className="text-center text-2xl font-bold text-gray-700 border-b-4 border-blue-600 pb-2">
@@ -121,6 +144,7 @@ export const ExpenseForm = () => {
             <input
                 type="submit"
                 className="bg-blue-500 hover:bg-blue-600 w-full py-2 font-bold uppercase text-white rounded-sm hover:cursor-pointer block"
+                value={handleBtn()}
             />
             {alert && <MessageAlert>{'All fields are required'}</MessageAlert>}
         </form>
